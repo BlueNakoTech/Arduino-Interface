@@ -1,4 +1,5 @@
 ﻿using System;
+using Tesseract;
 using System.IO.Ports;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Reflection;
 
 namespace Arduino_Interface
 {
@@ -22,6 +24,7 @@ namespace Arduino_Interface
 
             string[] availablePorts = SerialPort.GetPortNames();
             comboBoxPort.Items.AddRange(availablePorts);
+           
         }
 
         private bool IsSerialPortOpen()
@@ -50,6 +53,9 @@ namespace Arduino_Interface
 
         private void AppendDataToSerialMonitor(string data)
         {
+            string currentTime = DateTime.Now.ToString("HH:mm:ss");
+            string formattedData = $"# [{currentTime}] - {data}\n";
+
             // Use the Invoke method to safely update the UI control from a different thread
             if (serialMonitorTextBox.InvokeRequired)
             {
@@ -57,12 +63,24 @@ namespace Arduino_Interface
             }
             else
             {
-                // Append the received data to the existing content of the UI control
-                serialMonitorTextBox.AppendText(data);
+                bool shouldAutoScroll = IsAutoScrollEnabled(serialMonitorTextBox);
+
+                // Append the received data with time and newline to the existing content of the UI control
+                serialMonitorTextBox.AppendText(formattedData);
+
+                // Auto scroll to the latest data
+                if (shouldAutoScroll)
+                {
+                    serialMonitorTextBox.ScrollToCaret();
+                }
             }
         }
 
-
+        private bool IsAutoScrollEnabled(RichTextBox richTextBox)
+        {
+            int visibleLines = richTextBox.ClientSize.Height / richTextBox.Font.Height;
+            return richTextBox.Lines.Length - richTextBox.GetLineFromCharIndex(richTextBox.SelectionStart) <= visibleLines;
+        }
 
         private void online_Click(object sender, EventArgs e)
         {
@@ -222,19 +240,13 @@ namespace Arduino_Interface
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-
-
-        private void sendButton_Click(object sender, EventArgs e)
+        private void onButton_Click(object sender, EventArgs e)
         {
             if (IsSerialPortOpen())
             {
-                string inputText = inputBox.Text;
-
+                string inputText = "a1c";
+                string currentTime = DateTime.Now.ToString("HH:mm:ss");
+                string formattedData = $"# [{currentTime}] - {inputText}\n";
                 for (int i = 0; i < inputText.Length; i++)
                 {
                     char c = inputText[i];
@@ -252,6 +264,51 @@ namespace Arduino_Interface
                     // If this is the last character, clear the inputBox
                     if (i == inputText.Length - 1)
                     {
+
+                        
+                        
+                    }
+                }
+            }
+            else
+            {
+                ShowSerialPortErrorMessage();
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
+
+        private void sendButton_Click(object sender, EventArgs e)
+        {
+            if (IsSerialPortOpen())
+            {
+                string inputText = inputBox.Text;
+                string currentTime = DateTime.Now.ToString("HH:mm:ss");
+                string formattedData = $"# [{currentTime}] - {inputText}\n";
+                for (int i = 0; i < inputText.Length; i++)
+                {
+                    char c = inputText[i];
+                    serialPort.Write(c.ToString());
+
+                    while (!receivedDataBuffer.Contains("done"))
+                    {
+                        // Wait and allow the SerialPort_DataReceived event to handle the feedback
+                        Application.DoEvents();
+                    }
+
+                    // Clear the buffer after receiving feedback
+                    receivedDataBuffer = "";
+
+                    // If this is the last character, clear the inputBox
+                    if (i == inputText.Length - 1)
+                    {
+                        
+                        serialMonitorTextBox.AppendText(formattedData);
                         inputBox.Clear();
                     }
                 }
@@ -270,6 +327,52 @@ namespace Arduino_Interface
         private void inputBox_TextChanged(object sender, EventArgs e)
         {
 
+        }
+
+        private void serialMonitorTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
+        {
+            
+        }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Image Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp)|*.png;*.jpg;*.jpeg;*.gif;*.bmp|All Files (*.*)|*.*";
+
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string imagePath = openFileDialog.FileName;
+
+                // Perform OCR
+                string extractedText = PerformOCR(imagePath);
+
+                // Display the extracted text in the Label
+                label1.Text = extractedText;
+            }
+        }
+
+        private string PerformOCR(string imagePath)
+        {
+            using (var engine = new TesseractEngine("./tessdata", "seg", EngineMode.TesseractAndLstm))
+            {
+                using (var img = Pix.LoadFromFile(imagePath))
+                {
+                    using (var page = engine.Process(img))
+                    {
+                        return page.GetText();
+                    }
+                }
+            }
         }
     }
 }

@@ -32,6 +32,7 @@
             this.online = new System.Windows.Forms.Button();
             this.offline = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.onButton = new System.Windows.Forms.Button();
             this.button10 = new System.Windows.Forms.Button();
             this.button9 = new System.Windows.Forms.Button();
             this.button8 = new System.Windows.Forms.Button();
@@ -48,6 +49,8 @@
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.inputBox = new System.Windows.Forms.RichTextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.button11 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -91,6 +94,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.onButton);
             this.groupBox1.Controls.Add(this.button10);
             this.groupBox1.Controls.Add(this.button9);
             this.groupBox1.Controls.Add(this.button8);
@@ -108,11 +112,21 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Manual Input";
             // 
+            // onButton
+            // 
+            this.onButton.Location = new System.Drawing.Point(169, 222);
+            this.onButton.Name = "onButton";
+            this.onButton.Size = new System.Drawing.Size(50, 50);
+            this.onButton.TabIndex = 11;
+            this.onButton.Text = "ON";
+            this.onButton.UseVisualStyleBackColor = true;
+            this.onButton.Click += new System.EventHandler(this.onButton_Click);
+            // 
             // button10
             // 
-            this.button10.Location = new System.Drawing.Point(95, 222);
+            this.button10.Location = new System.Drawing.Point(94, 222);
             this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(40, 40);
+            this.button10.Size = new System.Drawing.Size(50, 50);
             this.button10.TabIndex = 10;
             this.button10.Text = "0";
             this.button10.UseVisualStyleBackColor = true;
@@ -120,9 +134,9 @@
             // 
             // button9
             // 
-            this.button9.Location = new System.Drawing.Point(174, 162);
+            this.button9.Location = new System.Drawing.Point(169, 162);
             this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(40, 40);
+            this.button9.Size = new System.Drawing.Size(50, 50);
             this.button9.TabIndex = 9;
             this.button9.Text = "9";
             this.button9.UseVisualStyleBackColor = true;
@@ -130,9 +144,9 @@
             // 
             // button8
             // 
-            this.button8.Location = new System.Drawing.Point(95, 161);
+            this.button8.Location = new System.Drawing.Point(94, 161);
             this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(40, 40);
+            this.button8.Size = new System.Drawing.Size(50, 50);
             this.button8.TabIndex = 8;
             this.button8.Text = "8";
             this.button8.UseVisualStyleBackColor = true;
@@ -142,7 +156,7 @@
             // 
             this.button7.Location = new System.Drawing.Point(16, 162);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(40, 40);
+            this.button7.Size = new System.Drawing.Size(50, 50);
             this.button7.TabIndex = 7;
             this.button7.Text = "7";
             this.button7.UseVisualStyleBackColor = true;
@@ -150,9 +164,9 @@
             // 
             // button6
             // 
-            this.button6.Location = new System.Drawing.Point(174, 99);
+            this.button6.Location = new System.Drawing.Point(169, 99);
             this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(40, 40);
+            this.button6.Size = new System.Drawing.Size(50, 50);
             this.button6.TabIndex = 6;
             this.button6.Text = "6";
             this.button6.UseVisualStyleBackColor = true;
@@ -162,7 +176,7 @@
             // 
             this.button4.Location = new System.Drawing.Point(16, 99);
             this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(40, 40);
+            this.button4.Size = new System.Drawing.Size(50, 50);
             this.button4.TabIndex = 4;
             this.button4.Text = "4";
             this.button4.UseVisualStyleBackColor = true;
@@ -170,9 +184,9 @@
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(95, 100);
+            this.button5.Location = new System.Drawing.Point(94, 100);
             this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(40, 40);
+            this.button5.Size = new System.Drawing.Size(50, 50);
             this.button5.TabIndex = 5;
             this.button5.Text = "5";
             this.button5.UseVisualStyleBackColor = true;
@@ -180,9 +194,9 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(174, 39);
+            this.button3.Location = new System.Drawing.Point(169, 39);
             this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(40, 40);
+            this.button3.Size = new System.Drawing.Size(50, 50);
             this.button3.TabIndex = 2;
             this.button3.Text = "3";
             this.button3.UseVisualStyleBackColor = true;
@@ -190,9 +204,9 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(95, 39);
+            this.button2.Location = new System.Drawing.Point(94, 39);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(40, 40);
+            this.button2.Size = new System.Drawing.Size(50, 50);
             this.button2.TabIndex = 1;
             this.button2.Text = "2";
             this.button2.UseVisualStyleBackColor = true;
@@ -202,7 +216,7 @@
             // 
             this.button1.Location = new System.Drawing.Point(16, 39);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(40, 40);
+            this.button1.Size = new System.Drawing.Size(50, 50);
             this.button1.TabIndex = 0;
             this.button1.Text = "1";
             this.button1.UseVisualStyleBackColor = true;
@@ -236,14 +250,17 @@
             // serialMonitorTextBox
             // 
             this.serialMonitorTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
-            this.serialMonitorTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.serialMonitorTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.serialMonitorTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.serialMonitorTextBox.Location = new System.Drawing.Point(6, 21);
+            this.serialMonitorTextBox.Location = new System.Drawing.Point(8, 21);
             this.serialMonitorTextBox.Name = "serialMonitorTextBox";
             this.serialMonitorTextBox.ReadOnly = true;
-            this.serialMonitorTextBox.Size = new System.Drawing.Size(206, 241);
+            this.serialMonitorTextBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.serialMonitorTextBox.Size = new System.Drawing.Size(225, 270);
             this.serialMonitorTextBox.TabIndex = 7;
+            this.serialMonitorTextBox.TabStop = false;
             this.serialMonitorTextBox.Text = "";
+            this.serialMonitorTextBox.TextChanged += new System.EventHandler(this.serialMonitorTextBox_TextChanged);
             // 
             // groupBox3
             // 
@@ -272,30 +289,53 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.serialMonitorTextBox);
-            this.groupBox4.Location = new System.Drawing.Point(552, 22);
+            this.groupBox4.Location = new System.Drawing.Point(531, 22);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(218, 297);
+            this.groupBox4.Size = new System.Drawing.Size(239, 297);
             this.groupBox4.TabIndex = 9;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Serial Monitor";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(123, 374);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(86, 31);
+            this.label1.TabIndex = 10;
+            this.label1.Text = "label1";
+            this.label1.Click += new System.EventHandler(this.label1_Click);
+            // 
+            // button11
+            // 
+            this.button11.Location = new System.Drawing.Point(122, 434);
+            this.button11.Name = "button11";
+            this.button11.Size = new System.Drawing.Size(75, 23);
+            this.button11.TabIndex = 11;
+            this.button11.Text = "button11";
+            this.button11.UseVisualStyleBackColor = true;
+            this.button11.Click += new System.EventHandler(this.button11_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(782, 553);
+            this.Controls.Add(this.button11);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
-            this.Text = "Arduino Control Interface";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -317,10 +357,13 @@
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button sendButton;
-        private System.Windows.Forms.RichTextBox serialMonitorTextBox;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RichTextBox inputBox;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.RichTextBox serialMonitorTextBox;
+        private System.Windows.Forms.Button onButton;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button button11;
     }
 }
 
