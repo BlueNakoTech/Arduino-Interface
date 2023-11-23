@@ -5,27 +5,118 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using AForge.Video;
+using AForge.Video.DirectShow;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Reflection;
+using Firebase.Database;
+using Firebase.Database.Query;
+using FirebaseAdmin;
+using System.IO;
+using System.Threading;
+using AForge.Imaging;
+using AForge.Imaging.Filters;
+using Image = System.Drawing.Image;
+using System.Drawing.Imaging;
+using ImageFormat = System.Drawing.Imaging.ImageFormat;
+using System.Diagnostics;
+using SimpleHttp;
 
 namespace Arduino_Interface
 {
+  
+
+   
     public partial class Form1 : Form
     {
         private string receivedDataBuffer = "";
         private SerialPort serialPort;
+        private FirebaseClient firebaseClient;
+        private FilterInfoCollection videoDevices;
+        private VideoCaptureDevice videoSource;
+        private Bitmap currentFrame;
+        private List<Bitmap> capturedFrames;
+        private int frameCount = 0;
 
         public Form1()
         {
             InitializeComponent();
-
+            InitializeWebcam();
+            
+            capturedFrames = new List<Bitmap>();
             string[] availablePorts = SerialPort.GetPortNames();
             comboBoxPort.Items.AddRange(availablePorts);
+            firebaseClient = new FirebaseClient("https://imagedata-3ddf4-default-rtdb.asia-southeast1.firebasedatabase.app/");
            
         }
+
+
+        private void GetWebcamCapabilities()
+        {
+            if (videoSource != null && videoSource.VideoCapabilities.Length > 0)
+            {
+                foreach (var capability in videoSource.VideoCapabilities)
+                {
+                    Console.WriteLine($"Resolution: {capability.FrameSize}, Aspect Ratio: {capability.FrameSize.Width}:{capability.FrameSize.Height}");
+                }
+            }
+        }
+
+        private void SetDesiredResolution(VideoCaptureDevice videoSource, int width, int height)
+        {
+            if (videoSource != null && videoSource.VideoCapabilities.Length > 0)
+            {
+            
+                var desiredCapability = videoSource.VideoCapabilities.FirstOrDefault(cap => cap.FrameSize.Width == width && cap.FrameSize.Height == height);
+                if (desiredCapability != null)
+                {
+                    videoSource.VideoResolution = desiredCapability;
+                }
+            }
+        }
+
+
+        private void InitializeWebcam()
+        {
+            try
+            {
+                videoDevices = new FilterInfoCollection(FilterCategory.VideoInputDevice);
+                if (videoDevices.Count == 0)
+                {
+                    MessageBox.Show("No video devices found.");
+                    return;
+                }
+
+                videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
+
+   
+                SetDesiredResolution(videoSource, 1280, 720); 
+                SetDesiredAspectRatio(videoSource, 4.0 / 3.0); 
+
+                videoSource.NewFrame += new NewFrameEventHandler(videoSource_NewFrame);
+                videoSource.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error initializing webcam: " + ex.Message);
+            }
+        }
+        private void SetDesiredAspectRatio(VideoCaptureDevice videoSource, double aspectRatio)
+        {
+            if (videoSource != null && videoSource.VideoCapabilities.Length > 0)
+            {
+            
+                var desiredCapability = videoSource.VideoCapabilities.FirstOrDefault(cap => Math.Abs((double)cap.FrameSize.Width / cap.FrameSize.Height - aspectRatio) < 0.01);
+                if (desiredCapability != null)
+                {
+                    videoSource.VideoResolution = desiredCapability;
+                }
+            }
+        }
+
 
         private bool IsSerialPortOpen()
         {
@@ -35,19 +126,14 @@ namespace Arduino_Interface
         {
             MessageBox.Show("Serial port is not open. Connect to the Arduino first.");
         }
-        private void comboBoxPort_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
+      
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string receivedData = serialPort.ReadExisting();
             receivedDataBuffer += receivedData;
 
-            if (!receivedData.Contains("done"))
-            {
-                AppendDataToSerialMonitor(receivedData);
-            }
+         
+             AppendDataToSerialMonitor(receivedData);
         }
 
 
@@ -56,7 +142,6 @@ namespace Arduino_Interface
             string currentTime = DateTime.Now.ToString("HH:mm:ss");
             string formattedData = $"# [{currentTime}] - {data}\n";
 
-            // Use the Invoke method to safely update the UI control from a different thread
             if (serialMonitorTextBox.InvokeRequired)
             {
                 serialMonitorTextBox.Invoke(new Action<string>(AppendDataToSerialMonitor), new object[] { data });
@@ -65,10 +150,9 @@ namespace Arduino_Interface
             {
                 bool shouldAutoScroll = IsAutoScrollEnabled(serialMonitorTextBox);
 
-                // Append the received data with time and newline to the existing content of the UI control
+
                 serialMonitorTextBox.AppendText(formattedData);
 
-                // Auto scroll to the latest data
                 if (shouldAutoScroll)
                 {
                     serialMonitorTextBox.ScrollToCaret();
@@ -85,13 +169,12 @@ namespace Arduino_Interface
         private void online_Click(object sender, EventArgs e)
         {
             string selectedPort = comboBoxPort.SelectedItem.ToString();
-            serialPort = new SerialPort(selectedPort, 115200); // Set appropriate baud rate and other settings
+            serialPort = new SerialPort(selectedPort, 115200); 
             try
             {
                 serialPort.Open();
                 if (serialPort.IsOpen)
                 {
-                    // Send initial data to the Arduino after the connection is established
                     serialPort.Write("online");
                     serialPort.DataReceived += SerialPort_DataReceived;
                 }
@@ -117,134 +200,13 @@ namespace Arduino_Interface
                 serialPort.Dispose();
             }
         }
-
-
-        private void button5_Click(object sender, EventArgs e)
-        {
-
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("5");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("1");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button6_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("6");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button8_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("8");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("3");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("4");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button7_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("7");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("2");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button9_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("9");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
-        private void button10_Click(object sender, EventArgs e)
-        {
-            if (IsSerialPortOpen())
-            {
-                serialPort.Write("0");
-            }
-            else
-            {
-                ShowSerialPortErrorMessage();
-            }
-        }
-
+      
+      
         private void onButton_Click(object sender, EventArgs e)
         {
             if (IsSerialPortOpen())
             {
-                string inputText = "a1c";
+                string inputText = "a123789h";
                 string currentTime = DateTime.Now.ToString("HH:mm:ss");
                 string formattedData = $"# [{currentTime}] - {inputText}\n";
                 for (int i = 0; i < inputText.Length; i++)
@@ -252,21 +214,16 @@ namespace Arduino_Interface
                     char c = inputText[i];
                     serialPort.Write(c.ToString());
 
-                    while (!receivedDataBuffer.Contains("done"))
+                    while (!receivedDataBuffer.Contains("d"))
                     {
-                        // Wait and allow the SerialPort_DataReceived event to handle the feedback
                         Application.DoEvents();
                     }
 
-                    // Clear the buffer after receiving feedback
                     receivedDataBuffer = "";
 
-                    // If this is the last character, clear the inputBox
                     if (i == inputText.Length - 1)
                     {
 
-                        
-                        
                     }
                 }
             }
@@ -276,10 +233,7 @@ namespace Arduino_Interface
             }
         }
 
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
+       
 
 
 
@@ -295,21 +249,21 @@ namespace Arduino_Interface
                     char c = inputText[i];
                     serialPort.Write(c.ToString());
 
-                    while (!receivedDataBuffer.Contains("done"))
+                    while (!receivedDataBuffer.Contains("d"))
                     {
-                        // Wait and allow the SerialPort_DataReceived event to handle the feedback
                         Application.DoEvents();
                     }
 
-                    // Clear the buffer after receiving feedback
+
                     receivedDataBuffer = "";
 
-                    // If this is the last character, clear the inputBox
                     if (i == inputText.Length - 1)
                     {
-                        
+                       
+
                         serialMonitorTextBox.AppendText(formattedData);
                         inputBox.Clear();
+                        serialPort.Write("a");
                     }
                 }
             }
@@ -320,59 +274,310 @@ namespace Arduino_Interface
         }
 
 
-    
-
-       
-
-        private void inputBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void serialMonitorTextBox_TextChanged(object sender, EventArgs e)
-        {
-
-        }
-
-        private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
-        {
-            
-        }
-
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button11_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Image Files (*.png;*.jpg;*.jpeg;*.gif;*.bmp)|*.png;*.jpg;*.jpeg;*.gif;*.bmp|All Files (*.*)|*.*";
-
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                string imagePath = openFileDialog.FileName;
-
-                // Perform OCR
-                string extractedText = PerformOCR(imagePath);
-
-                // Display the extracted text in the Label
-                label1.Text = extractedText;
-            }
-        }
+     
 
         private string PerformOCR(string imagePath)
-        {
-            using (var engine = new TesseractEngine("./tessdata", "seg", EngineMode.TesseractAndLstm))
+        {    
+            using (var engine = new TesseractEngine("./tessdata", "seg", EngineMode.TesseractOnly))
             {
                 using (var img = Pix.LoadFromFile(imagePath))
                 {
                     using (var page = engine.Process(img))
-                    {
+                    {                      
                         return page.GetText();
                     }
                 }
             }
+        }
+
+        private void button11_Click(object sender, EventArgs e)
+        {
+            if (IsSerialPortOpen())
+            {
+                string inputText = "24681";
+                string currentTime = DateTime.Now.ToString("HH:mm:ss");
+                string formattedData = $"# [{currentTime}] - Check Complete\n";
+                for (int i = 0; i < inputText.Length; i++)
+                {
+                    char c = inputText[i];
+                    serialPort.Write(c.ToString());
+
+                    while (!receivedDataBuffer.Contains("d"))
+                    {
+                     
+                        Application.DoEvents();
+                    }
+
+                 
+                    receivedDataBuffer = "";
+
+                  
+                    if (i == inputText.Length - 1)
+                    {
+
+                        serialMonitorTextBox.AppendText(formattedData);
+                        inputBox.Clear();
+                        
+                    }
+                }
+            }
+            else
+            {
+                ShowSerialPortErrorMessage();
+            }
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            if (IsSerialPortOpen())
+            {
+                serialPort.Write("3");
+            }
+            else
+            {
+                ShowSerialPortErrorMessage();
+            }
+           
+        }
+
+
+        private  void button13_Click(object sender, EventArgs e)
+        {
+            if (IsSerialPortOpen())
+            {
+                serialPort.Write("pic");
+            }
+            else
+            {
+                ShowSerialPortErrorMessage();
+            }
+
+        }
+
+       
+
+       
+        private void videoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
+        {
+            if (currentFrame != null)
+            {
+                currentFrame.Dispose();
+            }
+            currentFrame = (Bitmap)eventArgs.Frame.Clone();
+            currentFrame = new Bitmap(currentFrame, currentDisplay.Size);
+      
+            currentDisplay.Image = currentFrame;
+        }
+
+           public void WebCapture()
+        {
+            CaptureFrame();
+            LoadLastSavedFrame();
+            frameCount++;
+        }
+        private void CaptureFrame()
+        {
+            if (currentDisplay.Image != null)
+            {
+             
+                Bitmap capturedFrame32bpp = new Bitmap(currentDisplay.Image);
+
+          
+                Bitmap capturedFrame24bpp = new Bitmap(capturedFrame32bpp.Width, capturedFrame32bpp.Height, PixelFormat.Format24bppRgb);
+
+                using (Graphics graphics = Graphics.FromImage(capturedFrame24bpp))
+                {
+                    graphics.DrawImage(capturedFrame32bpp, new Rectangle(0, 0, capturedFrame24bpp.Width, capturedFrame24bpp.Height));
+                }
+
+             
+                string filename = @"C:\Users\USER PC\Pictures\Camera Roll\captured_frame_" + frameCount + ".jpeg";
+                capturedFrame24bpp.Save(filename, ImageFormat.Jpeg);
+
+           
+                capturedFrame24bpp.Dispose();
+                capturedFrame32bpp.Dispose();
+
+                capturedFrames.Add(capturedFrame24bpp);
+              
+            }
+        }
+       
+        
+
+        private void LoadLastSavedFrame()
+        {
+            string filename = @"C:\Users\USER PC\Pictures\Camera Roll\captured_frame_"+ frameCount +".jpeg"; 
+
+            if (File.Exists(filename))
+            {
+                Image image = Image.FromFile(filename);
+
+                savedDisplay.Image = image;
+            }
+            else
+            {
+                MessageBox.Show("No frame found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button14_Click(object sender, EventArgs e)
+        {
+         CaptureFrame();
+         LoadLastSavedFrame();
+         frameCount++;
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (videoSource != null && videoSource.IsRunning)
+            {
+                videoSource.SignalToStop();
+                videoSource.WaitForStop();
+            }
+        }
+
+        private void button15_Click(object sender, EventArgs e)
+        {
+            if (savedDisplay.Image != null)
+            {
+     
+                string folderPath = @"C:\Users\USER PC\Pictures\Camera Roll\Base"; 
+
+             
+                if (!Directory.Exists(folderPath))
+                {
+                    Directory.CreateDirectory(folderPath);
+                }
+
+                
+                string filename = Path.Combine(folderPath, "captured_frame_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".jpeg");
+
+              
+                savedDisplay.Image.Save(filename);
+            }
+        }
+
+        private void button16_Click(object sender, EventArgs e)
+        {
+            if (savedDisplay.Image != null)
+            {
+         
+                if (File.Exists(@"C:\Users\USER PC\Pictures\Camera Roll\Base\Base1.jpeg"))
+                {
+                    Bitmap savedImage = new Bitmap(@"C:\Users\USER PC\Pictures\Camera Roll\Base\Base1.jpeg");
+
+             
+                    if (savedImage.Width == savedDisplay.Image.Width && savedImage.Height == savedDisplay.Image.Height)
+                    {
+                    
+                        Bitmap displayedImage = new Bitmap(savedDisplay.Image);
+
+         
+                        savedImage = ConvertTo24bpp(savedImage);
+                        displayedImage = ConvertTo24bpp(displayedImage);
+
+                  
+                        ExhaustiveTemplateMatching tm = new ExhaustiveTemplateMatching(0.90f); 
+              
+                        TemplateMatch[] matchings = tm.ProcessImage(savedImage, displayedImage);
+
+            
+                        if (matchings.Length > 0)
+                        {
+                            AppendDataToSerialMonitor("Match");
+                        }
+                        else
+                        {
+                            AppendDataToSerialMonitor("Different");
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Image resolutions do not match.");
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Saved image not found.");
+                }
+            }
+        }
+
+        private Bitmap ConvertTo24bpp(Bitmap inputImage)
+        {
+            if (inputImage.PixelFormat == PixelFormat.Format24bppRgb)
+            {
+         
+                return inputImage;
+            }
+
+
+            Bitmap newImage = new Bitmap(inputImage.Width, inputImage.Height, PixelFormat.Format24bppRgb);
+
+
+            using (Graphics g = Graphics.FromImage(newImage))
+            {
+                g.DrawImage(inputImage, new Rectangle(0, 0, inputImage.Width, inputImage.Height));
+            }
+
+            return newImage;
+        }
+
+        private void button17_Click(object sender, EventArgs e)
+        {
+            string folderPath = @"C:\Users\USER PC\Pictures\Camera Roll"; 
+            if (Directory.Exists(folderPath))
+            {
+                Process.Start("explorer.exe", folderPath);
+            }
+            else
+            {
+                MessageBox.Show("The folder doesn't exist or is inaccessible.");
+            }
+        }
+
+        private void button18_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog openFileDialog = new OpenFileDialog())
+            {
+                openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
+                openFileDialog.Title = "Select an Image File";
+
+                if (openFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    using (Bitmap originalImage = new Bitmap(openFileDialog.FileName))
+                    {
+                        int desiredWidth = 200;
+                        int desiredHeight = 200; 
+
+                        using (Bitmap croppedImage = new Bitmap(desiredWidth, desiredHeight))
+                        {
+                            using (Graphics g = Graphics.FromImage(croppedImage))
+                            {
+                                g.DrawImage(originalImage, new Rectangle(0, 0, desiredWidth, desiredHeight), new Rectangle(50, 50, desiredWidth, desiredHeight), GraphicsUnit.Pixel);
+                            }
+
+                            using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+                            {
+                                saveFileDialog.Filter = "Image Files|*.jpg";
+                                saveFileDialog.Title = "Save Cropped Image";
+
+                                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                                {
+                                    croppedImage.Save(saveFileDialog.FileName, System.Drawing.Imaging.ImageFormat.Jpeg);
+                                    MessageBox.Show("Cropped image saved successfully!");
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            }
+
+        private void currentDisplay_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

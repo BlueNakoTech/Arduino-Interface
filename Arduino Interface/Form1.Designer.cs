@@ -31,30 +31,29 @@
             this.comboBoxPort = new System.Windows.Forms.ComboBox();
             this.online = new System.Windows.Forms.Button();
             this.offline = new System.Windows.Forms.Button();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.onButton = new System.Windows.Forms.Button();
-            this.button10 = new System.Windows.Forms.Button();
-            this.button9 = new System.Windows.Forms.Button();
-            this.button8 = new System.Windows.Forms.Button();
-            this.button7 = new System.Windows.Forms.Button();
-            this.button6 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
-            this.button5 = new System.Windows.Forms.Button();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.sendButton = new System.Windows.Forms.Button();
             this.serialMonitorTextBox = new System.Windows.Forms.RichTextBox();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.inputBox = new System.Windows.Forms.RichTextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.button11 = new System.Windows.Forms.Button();
-            this.groupBox1.SuspendLayout();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.crop = new System.Windows.Forms.Button();
+            this.folderSave = new System.Windows.Forms.Button();
+            this.compare = new System.Windows.Forms.Button();
+            this.save = new System.Windows.Forms.Button();
+            this.button13 = new System.Windows.Forms.Button();
+            this.captureImage = new System.Windows.Forms.Button();
+            this.home = new System.Windows.Forms.Button();
+            this.checknumber = new System.Windows.Forms.Button();
+            this.currentDisplay = new System.Windows.Forms.PictureBox();
+            this.savedDisplay = new System.Windows.Forms.PictureBox();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.currentDisplay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.savedDisplay)).BeginInit();
             this.SuspendLayout();
             // 
             // comboBoxPort
@@ -66,7 +65,6 @@
             this.comboBoxPort.Size = new System.Drawing.Size(214, 24);
             this.comboBoxPort.TabIndex = 0;
             this.comboBoxPort.Text = "Choose Serial Port";
-            this.comboBoxPort.SelectedIndexChanged += new System.EventHandler(this.comboBoxPort_SelectedIndexChanged);
             // 
             // online
             // 
@@ -91,136 +89,6 @@
             this.offline.Text = "Disconnect";
             this.offline.UseVisualStyleBackColor = false;
             this.offline.Click += new System.EventHandler(this.offline_Click);
-            // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.onButton);
-            this.groupBox1.Controls.Add(this.button10);
-            this.groupBox1.Controls.Add(this.button9);
-            this.groupBox1.Controls.Add(this.button8);
-            this.groupBox1.Controls.Add(this.button7);
-            this.groupBox1.Controls.Add(this.button6);
-            this.groupBox1.Controls.Add(this.button4);
-            this.groupBox1.Controls.Add(this.button5);
-            this.groupBox1.Controls.Add(this.button3);
-            this.groupBox1.Controls.Add(this.button2);
-            this.groupBox1.Controls.Add(this.button1);
-            this.groupBox1.Location = new System.Drawing.Point(289, 22);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(236, 297);
-            this.groupBox1.TabIndex = 3;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Manual Input";
-            // 
-            // onButton
-            // 
-            this.onButton.Location = new System.Drawing.Point(169, 222);
-            this.onButton.Name = "onButton";
-            this.onButton.Size = new System.Drawing.Size(50, 50);
-            this.onButton.TabIndex = 11;
-            this.onButton.Text = "ON";
-            this.onButton.UseVisualStyleBackColor = true;
-            this.onButton.Click += new System.EventHandler(this.onButton_Click);
-            // 
-            // button10
-            // 
-            this.button10.Location = new System.Drawing.Point(94, 222);
-            this.button10.Name = "button10";
-            this.button10.Size = new System.Drawing.Size(50, 50);
-            this.button10.TabIndex = 10;
-            this.button10.Text = "0";
-            this.button10.UseVisualStyleBackColor = true;
-            this.button10.Click += new System.EventHandler(this.button10_Click);
-            // 
-            // button9
-            // 
-            this.button9.Location = new System.Drawing.Point(169, 162);
-            this.button9.Name = "button9";
-            this.button9.Size = new System.Drawing.Size(50, 50);
-            this.button9.TabIndex = 9;
-            this.button9.Text = "9";
-            this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
-            // 
-            // button8
-            // 
-            this.button8.Location = new System.Drawing.Point(94, 161);
-            this.button8.Name = "button8";
-            this.button8.Size = new System.Drawing.Size(50, 50);
-            this.button8.TabIndex = 8;
-            this.button8.Text = "8";
-            this.button8.UseVisualStyleBackColor = true;
-            this.button8.Click += new System.EventHandler(this.button8_Click);
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(16, 162);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(50, 50);
-            this.button7.TabIndex = 7;
-            this.button7.Text = "7";
-            this.button7.UseVisualStyleBackColor = true;
-            this.button7.Click += new System.EventHandler(this.button7_Click);
-            // 
-            // button6
-            // 
-            this.button6.Location = new System.Drawing.Point(169, 99);
-            this.button6.Name = "button6";
-            this.button6.Size = new System.Drawing.Size(50, 50);
-            this.button6.TabIndex = 6;
-            this.button6.Text = "6";
-            this.button6.UseVisualStyleBackColor = true;
-            this.button6.Click += new System.EventHandler(this.button6_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(16, 99);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(50, 50);
-            this.button4.TabIndex = 4;
-            this.button4.Text = "4";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button5
-            // 
-            this.button5.Location = new System.Drawing.Point(94, 100);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(50, 50);
-            this.button5.TabIndex = 5;
-            this.button5.Text = "5";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(169, 39);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(50, 50);
-            this.button3.TabIndex = 2;
-            this.button3.Text = "3";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(94, 39);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(50, 50);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "2";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(16, 39);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(50, 50);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // groupBox2
             // 
@@ -252,15 +120,14 @@
             this.serialMonitorTextBox.BackColor = System.Drawing.SystemColors.ControlLightLight;
             this.serialMonitorTextBox.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.serialMonitorTextBox.ForeColor = System.Drawing.SystemColors.WindowText;
-            this.serialMonitorTextBox.Location = new System.Drawing.Point(8, 21);
+            this.serialMonitorTextBox.Location = new System.Drawing.Point(6, 21);
             this.serialMonitorTextBox.Name = "serialMonitorTextBox";
             this.serialMonitorTextBox.ReadOnly = true;
             this.serialMonitorTextBox.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.serialMonitorTextBox.Size = new System.Drawing.Size(225, 270);
+            this.serialMonitorTextBox.Size = new System.Drawing.Size(224, 492);
             this.serialMonitorTextBox.TabIndex = 7;
             this.serialMonitorTextBox.TabStop = false;
             this.serialMonitorTextBox.Text = "";
-            this.serialMonitorTextBox.TextChanged += new System.EventHandler(this.serialMonitorTextBox_TextChanged);
             // 
             // groupBox3
             // 
@@ -289,53 +156,147 @@
             // groupBox4
             // 
             this.groupBox4.Controls.Add(this.serialMonitorTextBox);
-            this.groupBox4.Location = new System.Drawing.Point(531, 22);
+            this.groupBox4.Location = new System.Drawing.Point(289, 22);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(239, 297);
+            this.groupBox4.Size = new System.Drawing.Size(236, 519);
             this.groupBox4.TabIndex = 9;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "Serial Monitor";
             // 
-            // label1
+            // groupBox5
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(123, 374);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(86, 31);
-            this.label1.TabIndex = 10;
-            this.label1.Text = "label1";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.groupBox5.Controls.Add(this.crop);
+            this.groupBox5.Controls.Add(this.folderSave);
+            this.groupBox5.Controls.Add(this.compare);
+            this.groupBox5.Controls.Add(this.save);
+            this.groupBox5.Controls.Add(this.button13);
+            this.groupBox5.Controls.Add(this.captureImage);
+            this.groupBox5.Controls.Add(this.home);
+            this.groupBox5.Controls.Add(this.checknumber);
+            this.groupBox5.Location = new System.Drawing.Point(12, 325);
+            this.groupBox5.Name = "groupBox5";
+            this.groupBox5.Size = new System.Drawing.Size(271, 216);
+            this.groupBox5.TabIndex = 10;
+            this.groupBox5.TabStop = false;
+            this.groupBox5.Text = "Command";
             // 
-            // button11
+            // crop
             // 
-            this.button11.Location = new System.Drawing.Point(122, 434);
-            this.button11.Name = "button11";
-            this.button11.Size = new System.Drawing.Size(75, 23);
-            this.button11.TabIndex = 11;
-            this.button11.Text = "button11";
-            this.button11.UseVisualStyleBackColor = true;
-            this.button11.Click += new System.EventHandler(this.button11_Click);
+            this.crop.Location = new System.Drawing.Point(142, 94);
+            this.crop.Name = "crop";
+            this.crop.Size = new System.Drawing.Size(123, 29);
+            this.crop.TabIndex = 16;
+            this.crop.Text = "Crop";
+            this.crop.UseVisualStyleBackColor = true;
+            this.crop.Click += new System.EventHandler(this.button18_Click);
+            // 
+            // folderSave
+            // 
+            this.folderSave.Location = new System.Drawing.Point(142, 58);
+            this.folderSave.Name = "folderSave";
+            this.folderSave.Size = new System.Drawing.Size(123, 29);
+            this.folderSave.TabIndex = 15;
+            this.folderSave.Text = "Saved Folder";
+            this.folderSave.UseVisualStyleBackColor = true;
+            this.folderSave.Click += new System.EventHandler(this.button17_Click);
+            // 
+            // compare
+            // 
+            this.compare.Location = new System.Drawing.Point(142, 22);
+            this.compare.Name = "compare";
+            this.compare.Size = new System.Drawing.Size(123, 29);
+            this.compare.TabIndex = 14;
+            this.compare.Text = "Compare";
+            this.compare.UseVisualStyleBackColor = true;
+            this.compare.Click += new System.EventHandler(this.button16_Click);
+            // 
+            // save
+            // 
+            this.save.Location = new System.Drawing.Point(6, 164);
+            this.save.Name = "save";
+            this.save.Size = new System.Drawing.Size(123, 29);
+            this.save.TabIndex = 13;
+            this.save.Text = "Save Base";
+            this.save.UseVisualStyleBackColor = true;
+            this.save.Click += new System.EventHandler(this.button15_Click);
+            // 
+            // button13
+            // 
+            this.button13.Location = new System.Drawing.Point(6, 93);
+            this.button13.Name = "button13";
+            this.button13.Size = new System.Drawing.Size(123, 30);
+            this.button13.TabIndex = 2;
+            this.button13.Text = "Command 3";
+            this.button13.UseVisualStyleBackColor = true;
+            this.button13.Click += new System.EventHandler(this.button13_Click);
+            // 
+            // captureImage
+            // 
+            this.captureImage.Location = new System.Drawing.Point(6, 129);
+            this.captureImage.Name = "captureImage";
+            this.captureImage.Size = new System.Drawing.Size(123, 29);
+            this.captureImage.TabIndex = 12;
+            this.captureImage.Text = "Capture Image";
+            this.captureImage.UseVisualStyleBackColor = true;
+            this.captureImage.Click += new System.EventHandler(this.button14_Click);
+            // 
+            // home
+            // 
+            this.home.Location = new System.Drawing.Point(6, 57);
+            this.home.Name = "home";
+            this.home.Size = new System.Drawing.Size(123, 30);
+            this.home.TabIndex = 1;
+            this.home.Text = "HOME";
+            this.home.UseVisualStyleBackColor = true;
+            this.home.Click += new System.EventHandler(this.button12_Click);
+            // 
+            // checknumber
+            // 
+            this.checknumber.Location = new System.Drawing.Point(6, 21);
+            this.checknumber.Name = "checknumber";
+            this.checknumber.Size = new System.Drawing.Size(123, 30);
+            this.checknumber.TabIndex = 0;
+            this.checknumber.Text = "Check Number";
+            this.checknumber.UseVisualStyleBackColor = true;
+            this.checknumber.Click += new System.EventHandler(this.button11_Click);
+            // 
+            // currentDisplay
+            // 
+            this.currentDisplay.Location = new System.Drawing.Point(531, 28);
+            this.currentDisplay.Name = "currentDisplay";
+            this.currentDisplay.Size = new System.Drawing.Size(320, 240);
+            this.currentDisplay.TabIndex = 11;
+            this.currentDisplay.TabStop = false;
+            this.currentDisplay.Click += new System.EventHandler(this.currentDisplay_Click);
+            // 
+            // savedDisplay
+            // 
+            this.savedDisplay.Location = new System.Drawing.Point(531, 301);
+            this.savedDisplay.Name = "savedDisplay";
+            this.savedDisplay.Size = new System.Drawing.Size(320, 240);
+            this.savedDisplay.TabIndex = 13;
+            this.savedDisplay.TabStop = false;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(782, 553);
-            this.Controls.Add(this.button11);
-            this.Controls.Add(this.label1);
+            this.ClientSize = new System.Drawing.Size(859, 574);
+            this.Controls.Add(this.savedDisplay);
+            this.Controls.Add(this.currentDisplay);
+            this.Controls.Add(this.groupBox5);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
-            this.Load += new System.EventHandler(this.Form1_Load);
-            this.groupBox1.ResumeLayout(false);
+            this.Text = "Arduino Interface";
             this.groupBox2.ResumeLayout(false);
             this.groupBox3.ResumeLayout(false);
             this.groupBox4.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.currentDisplay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.savedDisplay)).EndInit();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -344,26 +305,23 @@
         private System.Windows.Forms.ComboBox comboBoxPort;
         private System.Windows.Forms.Button online;
         private System.Windows.Forms.Button offline;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button button10;
-        private System.Windows.Forms.Button button9;
-        private System.Windows.Forms.Button button8;
-        private System.Windows.Forms.Button button7;
-        private System.Windows.Forms.Button button6;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button5;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Button sendButton;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.RichTextBox inputBox;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.RichTextBox serialMonitorTextBox;
-        private System.Windows.Forms.Button onButton;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Button button11;
+        private System.Windows.Forms.GroupBox groupBox5;
+        private System.Windows.Forms.Button button13;
+        private System.Windows.Forms.Button home;
+        private System.Windows.Forms.Button checknumber;
+        private System.Windows.Forms.Button captureImage;
+        private System.Windows.Forms.PictureBox currentDisplay;
+        private System.Windows.Forms.PictureBox savedDisplay;
+        private System.Windows.Forms.Button save;
+        private System.Windows.Forms.Button compare;
+        private System.Windows.Forms.Button folderSave;
+        private System.Windows.Forms.Button crop;
     }
 }
 
