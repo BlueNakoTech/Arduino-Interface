@@ -1,6 +1,11 @@
-﻿using SimpleHttp;
+﻿using Arduino_Interface;
+using SimpleHttp;
 using System;
+using System.Buffers.Text;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,7 +20,9 @@ namespace Arduino_Interface
         [STAThread]
         static void Main(string[] args)
         {
+
             formInstance = new Form1();
+
 
             // Start the simpleHttp server on the main thread
             Task.Run(() => StartHttpServer());
@@ -33,29 +40,75 @@ namespace Arduino_Interface
                 res.AsText("Welcome to Home");
             });
 
-            Route.Add("/users/{id}", (req, res, prop) =>
+            Route.Add("/write/{string}", (req, res, prop) =>
             {
-                res.AsText($"You requested User {prop["id"]}");
+                string textToWrite = prop["string"];
+
+                // Use Control.Invoke to safely update UI elements
+                formInstance.Invoke((MethodInvoker)delegate
+                {
+                    // Update the TextBox with the received text
+                    formInstance.UpdateTextBox(textToWrite);
+                });
+
+                res.AsText($"You wrote {textToWrite}");
             });
 
             Route.Add("/capture-frame", (req, res, prop) =>
             {
-                if (req.HttpMethod == "POST")
-                {
-                    // Call the WebCapture method from your WinForms application
-                    formInstance.WebCapture();
+               
 
-                    // Send a response indicating success
-                    res.AsText("Frame captured successfully.");
-                }
-                else
-                {
-                    res.StatusCode = 404;
-                    res.AsText("Not Found");
-                }
-            }, "POST");
+              
+            });
+
+            Route.Add("/command/{string}", (req, res, prop) =>
+            {
+                string textToWrite = prop["string"];
+
+
+                // Call the WebCapture method from your WinForms application
+                formInstance.CommandString(textToWrite);
+
+                // Send a response indicating success
+                res.AsText("command receive");
+
+                
+
+            });
 
             HttpServer.ListenAsync(1337, CancellationToken.None, Route.OnHttpRequestAsync).Wait();
+        }
+        
+
+
+    }
+}
+internal class CommandProcessor
+{
+    private readonly Form1 formInstance;
+
+    public CommandProcessor(Form1 formInstance)
+    {
+        this.formInstance = formInstance;
+    }
+
+    public void ProcessCommand(string command)
+    {
+        switch (command)
+        {
+            case "capture-frame":
+                formInstance.WebCapture();
+                break;
+
+            case "some-other-command":
+                // Handle another command
+                break;
+
+            // Add more cases as needed
+
+            default:
+                // Handle unknown commands
+                break;
         }
     }
 }

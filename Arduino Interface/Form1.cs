@@ -24,6 +24,7 @@ using System.Drawing.Imaging;
 using ImageFormat = System.Drawing.Imaging.ImageFormat;
 using System.Diagnostics;
 using SimpleHttp;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Arduino_Interface
 {
@@ -40,6 +41,8 @@ namespace Arduino_Interface
         private Bitmap currentFrame;
         private List<Bitmap> capturedFrames;
         private int frameCount = 0;
+        public PictureBox saved2Display;
+
 
         public Form1()
         {
@@ -375,6 +378,49 @@ namespace Arduino_Interface
             LoadLastSavedFrame();
             frameCount++;
         }
+
+          public void CommandString(string command)
+        {
+            if (IsSerialPortOpen())
+            {
+                string inputText = command;
+                string currentTime = DateTime.Now.ToString("HH:mm:ss");
+                string formattedData = $"# [{currentTime}] - Check Complete\n";
+                for (int i = 0; i < inputText.Length; i++)
+                {
+                    char c = inputText[i];
+                    serialPort.Write(c.ToString());
+
+                    while (!receivedDataBuffer.Contains("d"))
+                    {
+
+                        Application.DoEvents();
+                    }
+
+
+                    receivedDataBuffer = "";
+
+                }
+            }
+            else
+            {
+                ShowSerialPortErrorMessage();
+            }
+        }
+        public void UpdateTextBox(string newText)
+        {
+            if (serialMonitorTextBox.InvokeRequired)
+            {
+                // If called from a different thread, invoke on the UI thread
+                serialMonitorTextBox.Invoke(new Action(() => UpdateTextBox(newText)));
+            }
+            else
+            {
+                // Update the TextBox
+                serialMonitorTextBox.Text = newText;
+            }
+        }
+
         private void CaptureFrame()
         {
             if (currentDisplay.Image != null)
@@ -408,6 +454,21 @@ namespace Arduino_Interface
         private void LoadLastSavedFrame()
         {
             string filename = @"C:\Users\USER PC\Pictures\Camera Roll\captured_frame_"+ frameCount +".jpeg"; 
+
+            if (File.Exists(filename))
+            {
+                Image image = Image.FromFile(filename);
+
+                savedDisplay.Image = image;
+            }
+            else
+            {
+                MessageBox.Show("No frame found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        public void LoadSavedFrame()
+        {
+            string filename = @"C:\Users\USER PC\Pictures\Camera Roll\captured_frame_" + frameCount + ".jpeg";
 
             if (File.Exists(filename))
             {
