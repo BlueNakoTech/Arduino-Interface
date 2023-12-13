@@ -1,12 +1,7 @@
 ﻿using Arduino_Interface;
 using SimpleHttp;
 using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,13 +18,11 @@ namespace Arduino_Interface
 
             formInstance = new Form1();
 
-
-            // Start the simpleHttp server on the main thread
             Task.Run(() => StartHttpServer());
 
-            // Start your WinForms application in the main thread
+
             Application.EnableVisualStyles();
-            //Application.SetCompatibleTextRenderingDefault(false);
+
             Application.Run(formInstance);
         }
 
@@ -44,7 +37,7 @@ namespace Arduino_Interface
             {
                 string textToWrite = prop["string"];
 
-                // Use Control.Invoke to safely update UI elements
+
                 formInstance.Invoke((MethodInvoker)delegate
                 {
                     // Update the TextBox with the received text
@@ -56,9 +49,35 @@ namespace Arduino_Interface
 
             Route.Add("/capture-frame", (req, res, prop) =>
             {
-               
+                formInstance.WebCapture();
+                string imageDirectory = @"C:\Users\USER PC\Pictures\Camera Roll\";
 
-              
+
+                int frameCount = formInstance.frameCountPublic;
+                string filename = Path.Combine(imageDirectory, $"captured_frame_{frameCount - 1}.jpeg");
+
+                if (File.Exists(filename))
+                {
+
+                    byte[] imageBytes = File.ReadAllBytes(filename);
+
+
+                    res.OutputStream.Write(imageBytes, 0, imageBytes.Length);
+
+
+                    res.ContentType = "image/jpeg";
+
+
+                    res.StatusCode = 200;
+                }
+                else
+                {
+
+                    res.StatusCode = 404;
+                    res.AsText("Image not found.");
+                }
+
+
             });
 
             Route.Add("/command/{string}", (req, res, prop) =>
@@ -66,19 +85,19 @@ namespace Arduino_Interface
                 string textToWrite = prop["string"];
 
 
-                // Call the WebCapture method from your WinForms application
+
                 formInstance.CommandString(textToWrite);
 
-                // Send a response indicating success
+
                 res.AsText("command receive");
 
-                
+
 
             });
 
             HttpServer.ListenAsync(1337, CancellationToken.None, Route.OnHttpRequestAsync).Wait();
         }
-        
+
 
 
     }
