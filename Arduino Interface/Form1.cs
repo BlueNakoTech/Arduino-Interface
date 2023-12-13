@@ -1,36 +1,25 @@
-﻿using System;
-using Tesseract;
-using System.IO.Ports;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
+﻿using AForge.Imaging;
 using AForge.Video;
 using AForge.Video.DirectShow;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using System.Reflection;
 using Firebase.Database;
-using Firebase.Database.Query;
-using FirebaseAdmin;
-using System.IO;
-using System.Threading;
-using AForge.Imaging;
-using AForge.Imaging.Filters;
-using Image = System.Drawing.Image;
-using System.Drawing.Imaging;
-using ImageFormat = System.Drawing.Imaging.ImageFormat;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using SimpleHttp;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.IO.Ports;
+using System.Linq;
+using System.Windows.Forms;
+using Tesseract;
+using Image = System.Drawing.Image;
+using ImageFormat = System.Drawing.Imaging.ImageFormat;
 
 namespace Arduino_Interface
 {
-  
 
-   
+
+
     public partial class Form1 : Form
     {
         private string receivedDataBuffer = "";
@@ -42,18 +31,19 @@ namespace Arduino_Interface
         private List<Bitmap> capturedFrames;
         private int frameCount = 0;
         public PictureBox saved2Display;
+        public int frameCountPublic = 0;
 
 
         public Form1()
         {
             InitializeComponent();
             InitializeWebcam();
-            
+
             capturedFrames = new List<Bitmap>();
             string[] availablePorts = SerialPort.GetPortNames();
             comboBoxPort.Items.AddRange(availablePorts);
             firebaseClient = new FirebaseClient("https://imagedata-3ddf4-default-rtdb.asia-southeast1.firebasedatabase.app/");
-           
+
         }
 
 
@@ -72,7 +62,7 @@ namespace Arduino_Interface
         {
             if (videoSource != null && videoSource.VideoCapabilities.Length > 0)
             {
-            
+
                 var desiredCapability = videoSource.VideoCapabilities.FirstOrDefault(cap => cap.FrameSize.Width == width && cap.FrameSize.Height == height);
                 if (desiredCapability != null)
                 {
@@ -95,9 +85,9 @@ namespace Arduino_Interface
 
                 videoSource = new VideoCaptureDevice(videoDevices[0].MonikerString);
 
-   
-                SetDesiredResolution(videoSource, 1280, 720); 
-                SetDesiredAspectRatio(videoSource, 4.0 / 3.0); 
+
+                SetDesiredResolution(videoSource, 1280, 720);
+                SetDesiredAspectRatio(videoSource, 4.0 / 3.0);
 
                 videoSource.NewFrame += new NewFrameEventHandler(videoSource_NewFrame);
                 videoSource.Start();
@@ -111,7 +101,7 @@ namespace Arduino_Interface
         {
             if (videoSource != null && videoSource.VideoCapabilities.Length > 0)
             {
-            
+
                 var desiredCapability = videoSource.VideoCapabilities.FirstOrDefault(cap => Math.Abs((double)cap.FrameSize.Width / cap.FrameSize.Height - aspectRatio) < 0.01);
                 if (desiredCapability != null)
                 {
@@ -129,14 +119,14 @@ namespace Arduino_Interface
         {
             MessageBox.Show("Serial port is not open. Connect to the Arduino first.");
         }
-      
+
         private void SerialPort_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             string receivedData = serialPort.ReadExisting();
             receivedDataBuffer += receivedData;
 
-         
-             AppendDataToSerialMonitor(receivedData);
+
+            AppendDataToSerialMonitor(receivedData);
         }
 
 
@@ -172,7 +162,7 @@ namespace Arduino_Interface
         private void online_Click(object sender, EventArgs e)
         {
             string selectedPort = comboBoxPort.SelectedItem.ToString();
-            serialPort = new SerialPort(selectedPort, 115200); 
+            serialPort = new SerialPort(selectedPort, 115200);
             try
             {
                 serialPort.Open();
@@ -203,8 +193,8 @@ namespace Arduino_Interface
                 serialPort.Dispose();
             }
         }
-      
-      
+
+
         private void onButton_Click(object sender, EventArgs e)
         {
             if (IsSerialPortOpen())
@@ -236,7 +226,7 @@ namespace Arduino_Interface
             }
         }
 
-       
+
 
 
 
@@ -262,7 +252,7 @@ namespace Arduino_Interface
 
                     if (i == inputText.Length - 1)
                     {
-                       
+
 
                         serialMonitorTextBox.AppendText(formattedData);
                         inputBox.Clear();
@@ -277,16 +267,16 @@ namespace Arduino_Interface
         }
 
 
-     
+
 
         private string PerformOCR(string imagePath)
-        {    
+        {
             using (var engine = new TesseractEngine("./tessdata", "seg", EngineMode.TesseractOnly))
             {
                 using (var img = Pix.LoadFromFile(imagePath))
                 {
                     using (var page = engine.Process(img))
-                    {                      
+                    {
                         return page.GetText();
                     }
                 }
@@ -307,20 +297,20 @@ namespace Arduino_Interface
 
                     while (!receivedDataBuffer.Contains("d"))
                     {
-                     
+
                         Application.DoEvents();
                     }
 
-                 
+
                     receivedDataBuffer = "";
 
-                  
+
                     if (i == inputText.Length - 1)
                     {
 
                         serialMonitorTextBox.AppendText(formattedData);
                         inputBox.Clear();
-                        
+
                     }
                 }
             }
@@ -340,11 +330,11 @@ namespace Arduino_Interface
             {
                 ShowSerialPortErrorMessage();
             }
-           
+
         }
 
 
-        private  void button13_Click(object sender, EventArgs e)
+        private void button13_Click(object sender, EventArgs e)
         {
             if (IsSerialPortOpen())
             {
@@ -357,9 +347,9 @@ namespace Arduino_Interface
 
         }
 
-       
 
-       
+
+
         private void videoSource_NewFrame(object sender, NewFrameEventArgs eventArgs)
         {
             if (currentFrame != null)
@@ -368,18 +358,19 @@ namespace Arduino_Interface
             }
             currentFrame = (Bitmap)eventArgs.Frame.Clone();
             currentFrame = new Bitmap(currentFrame, currentDisplay.Size);
-      
+
             currentDisplay.Image = currentFrame;
         }
 
-           public void WebCapture()
+        public void WebCapture()
         {
             CaptureFrame();
             LoadLastSavedFrame();
             frameCount++;
+            frameCountPublic++;
         }
 
-          public void CommandString(string command)
+        public void CommandString(string command)
         {
             if (IsSerialPortOpen())
             {
@@ -425,10 +416,10 @@ namespace Arduino_Interface
         {
             if (currentDisplay.Image != null)
             {
-             
+
                 Bitmap capturedFrame32bpp = new Bitmap(currentDisplay.Image);
 
-          
+
                 Bitmap capturedFrame24bpp = new Bitmap(capturedFrame32bpp.Width, capturedFrame32bpp.Height, PixelFormat.Format24bppRgb);
 
                 using (Graphics graphics = Graphics.FromImage(capturedFrame24bpp))
@@ -436,24 +427,24 @@ namespace Arduino_Interface
                     graphics.DrawImage(capturedFrame32bpp, new Rectangle(0, 0, capturedFrame24bpp.Width, capturedFrame24bpp.Height));
                 }
 
-             
+
                 string filename = @"C:\Users\USER PC\Pictures\Camera Roll\captured_frame_" + frameCount + ".jpeg";
                 capturedFrame24bpp.Save(filename, ImageFormat.Jpeg);
 
-           
+
                 capturedFrame24bpp.Dispose();
                 capturedFrame32bpp.Dispose();
 
                 capturedFrames.Add(capturedFrame24bpp);
-              
+
             }
         }
-       
-        
+
+
 
         private void LoadLastSavedFrame()
         {
-            string filename = @"C:\Users\USER PC\Pictures\Camera Roll\captured_frame_"+ frameCount +".jpeg"; 
+            string filename = @"C:\Users\USER PC\Pictures\Camera Roll\captured_frame_" + frameCount + ".jpeg";
 
             if (File.Exists(filename))
             {
@@ -484,9 +475,9 @@ namespace Arduino_Interface
 
         private void button14_Click(object sender, EventArgs e)
         {
-         CaptureFrame();
-         LoadLastSavedFrame();
-         frameCount++;
+            CaptureFrame();
+            LoadLastSavedFrame();
+            frameCount++;
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
@@ -502,19 +493,19 @@ namespace Arduino_Interface
         {
             if (savedDisplay.Image != null)
             {
-     
-                string folderPath = @"C:\Users\USER PC\Pictures\Camera Roll\Base"; 
 
-             
+                string folderPath = @"C:\Users\USER PC\Pictures\Camera Roll\Base";
+
+
                 if (!Directory.Exists(folderPath))
                 {
                     Directory.CreateDirectory(folderPath);
                 }
 
-                
+
                 string filename = Path.Combine(folderPath, "captured_frame_" + DateTime.Now.ToString("yyyyMMddHHmmssfff") + ".jpeg");
 
-              
+
                 savedDisplay.Image.Save(filename);
             }
         }
@@ -523,27 +514,27 @@ namespace Arduino_Interface
         {
             if (savedDisplay.Image != null)
             {
-         
+
                 if (File.Exists(@"C:\Users\USER PC\Pictures\Camera Roll\Base\Base1.jpeg"))
                 {
                     Bitmap savedImage = new Bitmap(@"C:\Users\USER PC\Pictures\Camera Roll\Base\Base1.jpeg");
 
-             
+
                     if (savedImage.Width == savedDisplay.Image.Width && savedImage.Height == savedDisplay.Image.Height)
                     {
-                    
+
                         Bitmap displayedImage = new Bitmap(savedDisplay.Image);
 
-         
+
                         savedImage = ConvertTo24bpp(savedImage);
                         displayedImage = ConvertTo24bpp(displayedImage);
 
-                  
-                        ExhaustiveTemplateMatching tm = new ExhaustiveTemplateMatching(0.90f); 
-              
+
+                        ExhaustiveTemplateMatching tm = new ExhaustiveTemplateMatching(0.90f);
+
                         TemplateMatch[] matchings = tm.ProcessImage(savedImage, displayedImage);
 
-            
+
                         if (matchings.Length > 0)
                         {
                             AppendDataToSerialMonitor("Match");
@@ -569,7 +560,7 @@ namespace Arduino_Interface
         {
             if (inputImage.PixelFormat == PixelFormat.Format24bppRgb)
             {
-         
+
                 return inputImage;
             }
 
@@ -587,7 +578,7 @@ namespace Arduino_Interface
 
         private void button17_Click(object sender, EventArgs e)
         {
-            string folderPath = @"C:\Users\USER PC\Pictures\Camera Roll"; 
+            string folderPath = @"C:\Users\USER PC\Pictures\Camera Roll";
             if (Directory.Exists(folderPath))
             {
                 Process.Start("explorer.exe", folderPath);
@@ -610,7 +601,7 @@ namespace Arduino_Interface
                     using (Bitmap originalImage = new Bitmap(openFileDialog.FileName))
                     {
                         int desiredWidth = 200;
-                        int desiredHeight = 200; 
+                        int desiredHeight = 200;
 
                         using (Bitmap croppedImage = new Bitmap(desiredWidth, desiredHeight))
                         {
@@ -634,7 +625,7 @@ namespace Arduino_Interface
                     }
                 }
             }
-            }
+        }
 
         private void currentDisplay_Click(object sender, EventArgs e)
         {
