@@ -2,6 +2,7 @@
 using SimpleHttp;
 using System;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -47,29 +48,44 @@ namespace Arduino_Interface
                 res.AsText($"You wrote {textToWrite}");
             });
 
-            Route.Add("/capture-frame", (req, res, prop) =>
+            Route.Add("/capture-frame", async (req, res, prop) =>
             {
                 formInstance.WebCapture();
                 string imageDirectory = @"C:\Users\USER PC\Pictures\Camera Roll\";
-
-
                 int frameCount = formInstance.frameCountPublic;
                 string filename = Path.Combine(imageDirectory, $"captured_frame_{frameCount - 1}.jpeg");
 
                 if (File.Exists(filename))
                 {
+                    try
+                    {
+                        using (FileStream fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                        {
+                            byte[] imageBytes = new byte[fileStream.Length];
+                            await fileStream.ReadAsync(imageBytes, 0, imageBytes.Length);
 
-                    byte[] imageBytes = File.ReadAllBytes(filename);
+                            // Convert the image bytes to a base64 string
+                            string base64Image = Convert.ToBase64String(imageBytes);
 
-
-                    res.OutputStream.Write(imageBytes, 0, imageBytes.Length);
-
-
-                    res.ContentType = "image/jpeg";
-
-
-                    res.StatusCode = 200;
+                            // Send the base64 string in the response
+                            res.ContentType = "text/plain";
+                            await res.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(base64Image), 0, base64Image.Length);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error: {ex.Message}");
+                        res.StatusCode = 500;
+                        res.AsText("Internal Server Error");
+                    }
+                    finally
+                    {
+                        // Ensure the response is complete by closing the output stream
+                        res.OutputStream.Close();
+                    }
                 }
+
+
                 else
                 {
 

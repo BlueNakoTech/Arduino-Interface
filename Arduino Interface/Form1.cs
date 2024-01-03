@@ -10,6 +10,7 @@ using System.Drawing.Imaging;
 using System.IO;
 using System.IO.Ports;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Tesseract;
 using Image = System.Drawing.Image;
@@ -287,7 +288,7 @@ namespace Arduino_Interface
         {
             if (IsSerialPortOpen())
             {
-                string inputText = "24681";
+                string inputText = "a124681";
                 string currentTime = DateTime.Now.ToString("HH:mm:ss");
                 string formattedData = $"# [{currentTime}] - Check Complete\n";
                 for (int i = 0; i < inputText.Length; i++)
@@ -324,7 +325,32 @@ namespace Arduino_Interface
         {
             if (IsSerialPortOpen())
             {
-                serialPort.Write("3");
+                string inputText = "a123789c";
+                string currentTime = DateTime.Now.ToString("HH:mm:ss");
+                string formattedData = $"# [{currentTime}] - Check Complete\n";
+                for (int i = 0; i < inputText.Length; i++)
+                {
+                    char c = inputText[i];
+                    serialPort.Write(c.ToString());
+
+                    while (!receivedDataBuffer.Contains("d"))
+                    {
+
+                        Application.DoEvents();
+                    }
+
+
+                    receivedDataBuffer = "";
+
+
+                    if (i == inputText.Length - 1)
+                    {
+
+                        serialMonitorTextBox.AppendText(formattedData);
+                        inputBox.Clear();
+
+                    }
+                }
             }
             else
             {
@@ -334,11 +360,48 @@ namespace Arduino_Interface
         }
 
 
-        private void button13_Click(object sender, EventArgs e)
+        private async void button13_Click(object sender, EventArgs e)
         {
             if (IsSerialPortOpen())
             {
-                serialPort.Write("pic");
+                string inputText = "a1237891c";
+                string currentTime = DateTime.Now.ToString("HH:mm:ss");
+                string formattedData = $"# [{currentTime}] - Check Complete\n";
+                int timeoutMilliseconds = 30000;
+                DateTime startTime = DateTime.Now;
+                for (int i = 0; i < inputText.Length; i++)
+                {
+                    char c = inputText[i];
+                    serialPort.Write(c.ToString());
+
+                    while (!receivedDataBuffer.Contains("d"))
+                    {
+
+                        Application.DoEvents();
+                    }
+
+
+                    receivedDataBuffer = "";
+
+
+                    if (i == inputText.Length - 1)
+                    {
+                     
+                        if ((DateTime.Now - startTime).TotalMilliseconds >= timeoutMilliseconds)
+                        {
+                           
+                            
+                            inputText = "a1c"; 
+                        }
+                        await Task.Delay(1000);
+                        WebCapture();
+                        await HomeAsync();
+
+                        
+                        serialMonitorTextBox.AppendText(formattedData);
+                        inputBox.Clear();
+                    }
+                }
             }
             else
             {
@@ -367,7 +430,8 @@ namespace Arduino_Interface
             CaptureFrame();
             LoadLastSavedFrame();
             frameCount++;
-            frameCountPublic++;
+           // frameCountPublic++;
+           
         }
 
         public void CommandString(string command)
@@ -626,11 +690,72 @@ namespace Arduino_Interface
                 }
             }
         }
+        public async Task<bool> HomeAsync()
+        {
+            try
+            {
+                CommandString("h");
 
+                // Use Task.Delay to introduce a timeout
+                await Task.Delay(1000);
+
+                return true; // Successfully sent within the timeout
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions, log, or return false if an error occurs
+                Console.WriteLine($"Error sending character: {ex.Message}");
+                return false;
+            }
+        }
         private void currentDisplay_Click(object sender, EventArgs e)
         {
 
         }
+
+        private async void button1_Click(object sender, EventArgs e)
+        {
+            if (IsSerialPortOpen())
+            {
+                string inputText = "a1c";
+                string currentTime = DateTime.Now.ToString("HH:mm:ss");
+                string formattedData = $"# [{currentTime}] - Check Complete\n";
+                
+              
+                for (int i = 0; i < inputText.Length; i++)
+                {
+                    char c = inputText[i];
+                    serialPort.Write(c.ToString());
+
+                    while (!receivedDataBuffer.Contains("d"))
+                    {
+
+                        Application.DoEvents();
+                    }
+
+
+                    receivedDataBuffer = "";
+
+
+                    if (i == inputText.Length - 1)
+                    {
+
+                        await Task.Delay(1000);
+                        WebCapture();
+                        await HomeAsync();
+
+
+                        serialMonitorTextBox.AppendText(formattedData);
+                        inputBox.Clear();
+                    }
+                }
+            }
+            else
+            {
+                ShowSerialPortErrorMessage();
+            }
+        }
     }
+
 }
 

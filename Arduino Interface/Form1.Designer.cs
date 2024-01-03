@@ -48,6 +48,8 @@
             this.checknumber = new System.Windows.Forms.Button();
             this.currentDisplay = new System.Windows.Forms.PictureBox();
             this.savedDisplay = new System.Windows.Forms.PictureBox();
+            this.button1 = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -165,6 +167,8 @@
             // 
             // groupBox5
             // 
+            this.groupBox5.Controls.Add(this.button2);
+            this.groupBox5.Controls.Add(this.button1);
             this.groupBox5.Controls.Add(this.crop);
             this.groupBox5.Controls.Add(this.folderSave);
             this.groupBox5.Controls.Add(this.compare);
@@ -212,7 +216,7 @@
             // 
             // save
             // 
-            this.save.Location = new System.Drawing.Point(6, 164);
+            this.save.Location = new System.Drawing.Point(142, 164);
             this.save.Name = "save";
             this.save.Size = new System.Drawing.Size(123, 29);
             this.save.TabIndex = 13;
@@ -226,13 +230,13 @@
             this.button13.Name = "button13";
             this.button13.Size = new System.Drawing.Size(123, 30);
             this.button13.TabIndex = 2;
-            this.button13.Text = "Command 3";
+            this.button13.Text = "Command 1";
             this.button13.UseVisualStyleBackColor = true;
             this.button13.Click += new System.EventHandler(this.button13_Click);
             // 
             // captureImage
             // 
-            this.captureImage.Location = new System.Drawing.Point(6, 129);
+            this.captureImage.Location = new System.Drawing.Point(142, 129);
             this.captureImage.Name = "captureImage";
             this.captureImage.Size = new System.Drawing.Size(123, 29);
             this.captureImage.TabIndex = 12;
@@ -246,7 +250,7 @@
             this.home.Name = "home";
             this.home.Size = new System.Drawing.Size(123, 30);
             this.home.TabIndex = 1;
-            this.home.Text = "HOME";
+            this.home.Text = "ON_Pass";
             this.home.UseVisualStyleBackColor = true;
             this.home.Click += new System.EventHandler(this.button12_Click);
             // 
@@ -276,6 +280,25 @@
             this.savedDisplay.Size = new System.Drawing.Size(320, 240);
             this.savedDisplay.TabIndex = 13;
             this.savedDisplay.TabStop = false;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(6, 129);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(123, 30);
+            this.button1.TabIndex = 17;
+            this.button1.Text = "Command 2";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(6, 165);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(123, 30);
+            this.button2.TabIndex = 18;
+            this.button2.Text = "Command 3";
+            this.button2.UseVisualStyleBackColor = true;
             // 
             // Form1
             // 
@@ -322,6 +345,8 @@
         private System.Windows.Forms.Button compare;
         private System.Windows.Forms.Button folderSave;
         private System.Windows.Forms.Button crop;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button1;
     }
 }
 
